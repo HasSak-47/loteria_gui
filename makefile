@@ -16,7 +16,7 @@ run : build
 	./$(TARGET)
 
 valgrind : build
-	valgrind --leak-check=full ./$(TARGET)
+	valgrind ./$(TARGET)
 
 source: $(OBJS)
 
