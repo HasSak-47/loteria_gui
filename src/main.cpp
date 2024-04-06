@@ -1,27 +1,42 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QGridLayout>
 
-class MyButton : public QWidget {
+#include <board.hpp>
+#include <blueprint.hpp>
+
+
+class MyApp : public QWidget {
+private:
+	Blueprint* blueprint;
 public:
-	MyButton(QWidget* parent = nullptr) : QWidget(parent) {
-		auto* button = new QPushButton("Button", this);
-		button->setGeometry(10, 10, 100, 30);
+	MyApp(QWidget* parent = nullptr) : QWidget(parent) {
+		blueprint = new Blueprint(this);
+		auto* button = new QPushButton("Submit", this);
+		connect(button, &QPushButton::clicked, this, &MyApp::submit);
 
-		button->setToolTip("QPushButton");
-		connect(button, &QPushButton::clicked, qApp, &QApplication::quit);
+		auto* layout = new QGridLayout(this);
+		layout->addWidget(blueprint, 0, 0);
+		layout->addWidget(button, 1, 0);
 	}
+
+	void submit(){
+
+	}
+
+	~MyApp() override {}
 };
 
 int main(int argc, char** argv) {
 
 	QApplication app(argc, argv);
 
-	MyButton window;
+	MyApp window;
 
-	window.resize(250, 150);
+	window.resize(400, 200);
 	window.setWindowTitle("Tool Tip");
-	window.setToolTip("QWidget");
 	window.show();
 
 	return app.exec();
