@@ -40,16 +40,14 @@ struct ButtonLine : QWidget {
 class BlueprintCell : public QWidget {
 private:
 	QPushButton* _random;
-	QPushButton* _clopy;
+	QPushButton* _copy;
 	ButtonLine* _setto;
 	ButtonType _type = ButtonType::Random;
 
-	void _make_child();
 	void toggle_type();
 public:
 	size_t x, y;
 	BlueprintCell(size_t x, size_t y, Blueprint* parent);
-
 	void render();
 };
 
