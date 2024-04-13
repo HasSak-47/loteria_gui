@@ -12,7 +12,7 @@ enum class ButtonType {
 	MarkCopy   = 0x02,
 	SetTo      = 0x03,
 	TYPE_MASK  = 0x0f,
-	VALUE_MASK = 0xf0,
+	VALUE_MASK = 0xff0,
 };
 
 ButtonType operator&(ButtonType a, ButtonType b);
@@ -21,34 +21,36 @@ ButtonType operator^(ButtonType a, ButtonType b);
 
 class BlueprintCell;
 class Blueprint;
+class LineButton;
 
-struct ButtonLine : QWidget {
+struct LineButton : public QWidget {
 	QGridLayout* layout;
 	QPushButton* button;
 	QLineEdit* line;
-	ButtonLine(QWidget* parent = nullptr) : QWidget(parent) {
-		layout = new QGridLayout(this);
-		button = new QPushButton("S", this);
-		line   = new QLineEdit("Number", this);
-
-		layout->addWidget(line, 0, 0);
-		layout->addWidget(button, 0, 1);
-		setLayout(layout);
-	}
+	LineButton(QWidget* parent = nullptr);
+	~LineButton();
 };
 
 class BlueprintCell : public QWidget {
 private:
-	QPushButton* _random;
-	QPushButton* _copy;
-	ButtonLine* _setto;
+	QWidget* _child;
 	ButtonType _type = ButtonType::Random;
+	Blueprint* _blueprint;
 
 	void toggle_type();
+	void create_button(const char* text);
 public:
 	size_t x, y;
 	BlueprintCell(size_t x, size_t y, Blueprint* parent);
+	~BlueprintCell() override {}
 	void render();
+
+	friend class Blueprint;
+};
+
+struct BlueprintParam {
+	std::string name;
+	std::vector<size_t> values;
 };
 
 class Blueprint : public QWidget {
@@ -59,6 +61,9 @@ public:
 	~Blueprint() override {}
 
 	friend class BlueprintCell;
+	std::vector<BlueprintParam> build();
 };
+
+extern const std::string options[];
 
 #endif
