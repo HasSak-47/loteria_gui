@@ -2,3 +2,4 @@ dependecies/
 .cache
 LOTE
 *.bk
+*.o
