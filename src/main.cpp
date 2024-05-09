@@ -8,6 +8,7 @@
 
 #include <board.hpp>
 #include <blueprint.hpp>
+#include <runner.hpp>
 #include <iostream>
 
 class LabelText : public QWidget {
@@ -81,12 +82,13 @@ public:
 class MyApp : public QWidget {
 private:
 	Blueprint* blueprint;
-	LabelText* count;
+	LabelText* count, *total;
 	PathSelector* src, *dst;
 public:
 	MyApp(QWidget* parent = nullptr) : QWidget(parent) {
 		blueprint = new Blueprint(this);
 		this->count = new LabelText("Numero de loterias", "4", 50, this);
+		this->total = new LabelText("Numero de Cartas", "54", 50, this);
 		this->src = new PathSelector("Entrada", this);
 		this->dst = new PathSelector("Salida", this);
 
@@ -99,26 +101,44 @@ public:
 		auto* layout = new QGridLayout(this);
 
 		layout->addWidget(count, 0, 0);
+		layout->addWidget(total, 1, 0);
 
 		auto* selection_layout = new QGridLayout(this);
 		selection_layout->addWidget(src, 0, 0);
 		selection_layout->addWidget(dst, 0, 1);
 
-		layout->addLayout(selection_layout, 1, 0);
+		layout->addLayout(selection_layout, 2, 0);
 
-		layout->addWidget(blueprint, 2, 0);
-		layout->addWidget(button,    3, 0);
+		layout->addWidget(blueprint, 3, 0);
+		layout->addWidget(button,    4, 0);
 	}
 
 	void submit(){
-		auto p = blueprint->build();
-		p.insert(p.begin(), {"SetCount", {(size_t)std::stoi(count->line_edit->text().toStdString())}});
-		for (auto& i : p){
-			std::cout<< i.name << " ";
-			for (auto& j : i.values)
-				std::cout<< j << " ";
-			std::cout<< std::endl;
+		blueprint->count = std::stoi(count->line_edit->text().toStdString());
+		blueprint->total = std::stoi(total->line_edit->text().toStdString());
+		auto params = blueprint->build();
+		CmdBuilder builder("loteria-cli");
+		builder.set_local();
+
+		std::string src_str = src->line_edit->text().toStdString();
+		std::string dst_str = dst->line_edit->text().toStdString();
+
+		builder.add_arg("-d " + src_str);
+		builder.add_arg("-o " + dst_str);
+
+		// set the run instrucctions
+		builder.add_arg("args");
+		for(const auto& param : params){
+			std::string param_str = param.name;
+			for(const auto& value : param.values)
+				param_str += " " + std::to_string(value);
+
+			builder.add_arg(param_str);
 		}
+
+		auto cmd = builder.build();
+		Runner runner(cmd);
+		runner.run();
 	}
 
 	~MyApp() override {}

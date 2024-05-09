@@ -97,11 +97,14 @@ const std::string options[] = {
 	"SetTo",
 
 	"SetCount",
+	"SetTotal",
 };
 
 std::vector<BlueprintParam> Blueprint::build(){
 	std::vector<BlueprintParam> params = {};
 
+	params.push_back({"SetCount", {this->count}});
+	params.push_back({"SetTotal", {this->total}});
 	for (size_t x = 0; x < 4; x++){
 		for (size_t y = 0; y < 4; y++){
 			auto* cell = this->_cells[x][y];
@@ -123,8 +126,6 @@ std::vector<BlueprintParam> Blueprint::build(){
 			}
 		}
 	}
-
-	params.push_back({"SetCount", {4}});
 
 	return params;
 }

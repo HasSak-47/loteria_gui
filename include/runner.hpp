@@ -12,47 +12,31 @@ struct Cmd{
 class CmdBuilder{
 private:
 	std::string _cmd;
-	std::vector<std::string> args;
+	std::vector<std::string> _args;
+	bool _path;
 public:
 	CmdBuilder(std::string cmd): _cmd(cmd){ }
 
 	CmdBuilder& add_arg(std::string arg){
-		this->args.push_back(arg);
+		this->_args.push_back(arg);
 		return *this;
 	}
 
-	Cmd build(){
-		return {this->_cmd, this->args};
+	void set_local(){
+		this->_path = false;
 	}
+
+	Cmd build();
 };
 
 class Runner{
-public:
-	enum Pipes{
-		stdin = 1,
-		stdout= 2,
-		stderr= 4,
-	};
 private:
 	Cmd _cmd;
-	Pipes _pipe;
-
-	std::string out;
 public:
 	Runner(Cmd cmd): _cmd(cmd){ }
 
-	void pipe_stdin(){
-		this->_pipe = (Pipes)(this->_pipe | stdin);
-	}
-	void pipe_stdout(){
-		this->_pipe = (Pipes)(this->_pipe | stdout);
-	}
-	void pipe_stderr(){
-		this->_pipe = (Pipes)(this->_pipe | stdout);
-	}
-
-	void pipe_in(const std::string& msg);
-	std::string pipe_out();
+	// void pipe_in(const std::string& msg);
+	// std::string pipe_out();
 
 	void run();
 

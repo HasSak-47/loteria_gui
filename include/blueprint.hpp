@@ -57,6 +57,9 @@ class Blueprint : public QWidget {
 	BlueprintCell* _cells[4][4];
 	QGridLayout* _grid;
 public:
+	size_t count = 0;
+	size_t total = 0;
+
 	Blueprint(QWidget* parent = nullptr);
 	~Blueprint() override {}
 
